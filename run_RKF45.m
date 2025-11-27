@@ -8,8 +8,8 @@ while t < T
        dt = T - t;
    end
    [y_, t_, dt] = RKF45_step(t, y, dt, mu, tolerance);
-   y_array = [y_array; y_]; 
-   t_array = [t_array; t_];
+   y_array = [y_array, y_]; 
+   t_array = [t_array, t_];
    y = y_; t = t_;
 end
 end
