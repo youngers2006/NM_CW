@@ -13,7 +13,7 @@ function [t_, y_, dt_] = Implicit_euler_adaptive_step(t, y, dt, mu, tol)
             scale = safety * (tol / error) ^ 0.5;
         end
         
-        scale = max(min_scale, min(max_scale, scale));
+        scale = min()
 
         if error < tol % success
             t_ = t + dt;
