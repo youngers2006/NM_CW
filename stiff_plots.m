@@ -2,10 +2,10 @@ clc
 clear
 
 t_I = 0;
-y_I = [1.0; 0];
+y_I = [0.0; 0];
 dt = 0.1;
 mu = 3.0;
-T = 100;
+T = 30;
 tolerance = 0.0001;
 
 [y_RK4, t_RK4] = run_RK4(t_I, y_I, dt, mu, T);

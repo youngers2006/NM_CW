@@ -1,9 +1,0 @@
-clc
-clear
-
-opts_15 = odeset('RelTol', 1e-6, 'AbsTol', 1e-9, 'BDF', 'on');
-[t_15, y_15] = ode15(@myODE, [0 10], y0, opts_15);
-
-opts_45 = odeset('RelTol', 1e-6, 'AbsTol', 1e-9);
-[t_45, y_45] = ode45(@myODE, [0 10], y0, opts45);
-
