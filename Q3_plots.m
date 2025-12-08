@@ -2,11 +2,11 @@ clc
 clear
 
 t_I = 0;
-y_I = [0.1; 0];
+y_I = [2.0; 0.0];
 dt = 0.01;
 mu = 1.0;
 T = 20;
-tolerance = 1e-6;
+tolerance = 1e-8;
 
 disp("Running RK4")
 [y_RK4, t_RK4]     = run_RK4(t_I, y_I, dt, mu, T);
@@ -19,7 +19,7 @@ disp("Running IEA")
 
 disp("Running ground truth calculation")
 t_span = [t_I T];
-opts_45 = odeset('RelTol', 1e-9, 'AbsTol', 1e-11);
+opts_45 = odeset('RelTol', 1e-12, 'AbsTol', 1e-14);
 [t_ref, y_ref] = ode45(@(t, y) f(t, y, mu), t_span, y_I, opts_45);
 t_ref = t_ref'; 
 y_ref = y_ref';
@@ -35,50 +35,55 @@ err_IE     = abs(y_IE(1,:) - y_true_IE);
 % 3. RKF45 (Adaptive)
 y_true_RKF45 = interp1(t_ref, y_ref(1,:), t_RKF45, 'spline');
 err_RKF45    = abs(y_RKF45(1,:) - y_true_RKF45);
-% 4. Adaptive Implicit Euler (Adaptive)
+% % 4. Adaptive Implicit Euler (Adaptive)
 y_true_IEA   = interp1(t_ref, y_ref(1,:), t_IEA, 'spline');
 err_IEA      = abs(y_IEA(1,:) - y_true_IEA);
 
+total_error = [mean(err_RK4), mean(err_IE), mean(err_RKF45), mean(err_IEA)];
+disp("error")
+disp(total_error)
+
 % Phase Plots Q3
-figure 
+figure ('Name', 'Phase_Space', 'Color', 'w');
 hold on;
-plot(y_RK4(1,:), y_RK4(2,:));
-plot(y_RKF45(1,:), y_RKF45(2,:));
-plot(y_IE(1,:), y_IE(2,:));
-plot(y_IEA(1,:), y_IEA(2,:));
-plot(y_ref(1,:), y_ref(2,:));
-title("Phase Space Plot")
-legend("RK4","RKF45","Implicit Euler","Adaptive Implicit Euler","Ground Truth")
+plot(y_RK4(1,:), y_RK4(2,:), 'r-', 'LineWidth', 1.5, 'DisplayName', 'RK4');
+plot(y_IE(1,:), y_IE(2,:), 'b-', 'LineWidth', 1.5, 'DisplayName', 'Implicit Euler');
+plot(y_ref(1,:), y_ref(2,:), 'g-', 'LineWidth', 1.5, 'DisplayName', 'Reference Solution');
+title("Phase Space (\mu = 1.0)")
+xlabel("x / m")
+ylabel("y / ms^{-1}")
+legend('Location', 'southeast');
+grid on;
 hold off
 
 % timespace plots Q3
-figure
+figure('Name', 'Total_Error', 'Color', 'w');
 hold on;
-plot(t_RK4, y_RK4(1,:));
-plot(t_IE, y_IE(1,:));
-plot(t_ref, y_ref(1,:));
-title("Time Space Plot for fixed step methods")
-legend("RK4","Implicit Euler","Ground Truth")
+plot(t_RK4, y_RK4(1,:), 'r-', 'LineWidth', 1.5, 'DisplayName', 'RK4');
+plot(t_IE, y_IE(1,:), 'b-', 'LineWidth', 1.5, 'DisplayName', 'Implicit Euler');
+plot(t_ref, y_ref(1,:), 'g-', 'LineWidth', 1.5, 'DisplayName', 'Reference Solution');
+title("Time Space (\mu = 1.0)")
+xlabel("Time / s")
+ylabel("x / m")
+legend('Location', 'southeast');
+grid on;
 hold off;
 
-figure
-hold on;
-plot(t_RKF45, y_RKF45(1,:));
-plot(t_IEA, y_IEA(1,:));
-plot(t_ref, y_ref(1,:));
-title("Time Space Plot for adaptive step methods")
-legend("RKF45","Adaptive Implicit Euler","Ground Truth")
-hold off;
-
-figure('Name', 'Q3_Total_Error_Comparison', 'Color', 'w');
-% use semilogy instead of plot
-semilogy(t_RK4,   err_RK4 + 1e-20,   'r-', 'LineWidth', 1.5, 'DisplayName', 'RK4 (Fixed)');
+figure('Name', 'Total_Error_Comparison', 'Color', 'w');
+semilogy(t_RK4,   err_RK4 + 1e-20,   'r-', 'LineWidth', 1.5, 'DisplayName', 'RK4');
 hold on; grid on; box on;
-semilogy(t_IE,    err_IE + 1e-20,    'b-', 'LineWidth', 1.5, 'DisplayName', 'Imp. Euler (Fixed)');
-semilogy(t_RKF45, err_RKF45 + 1e-20, 'm-', 'LineWidth', 1.0, 'DisplayName', 'RKF45 (Adaptive)');
-semilogy(t_IEA,   err_IEA + 1e-20,   'g-', 'LineWidth', 1.0, 'DisplayName', 'Adap. Imp. Euler');
+semilogy(t_IE,    err_IE + 1e-20,    'b-', 'LineWidth', 1.5, 'DisplayName', 'Implicit Euler');
 
-xlabel('Time (s)');
-ylabel('Absolute Error (Log Scale)');
+xlabel('Time / s');
+ylabel('Absolute Error / m');
+ylim([1e-13, 1e0])
 title(['Accuracy Comparison (\mu=' num2str(mu) ')']);
-legend('Location', 'bestoutside');
+legend('Location', 'southeast');
+
+exportgraphics(figure(1), 'Phase_Space_Plot.png', 'Resolution', 300);
+
+% Save Time Series Plot
+exportgraphics(figure(2), 'Time_Series_Plot.png', 'Resolution', 300);
+
+% Save Error Plot
+exportgraphics(figure(3), 'Error_Comparison.png', 'Resolution', 300);

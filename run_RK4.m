@@ -19,4 +19,6 @@ function [y_array, t_array] = run_RK4(t_I, y_I, dt, mu, T)
        y = y_; 
        t = t_;
     end
+    disp("RK4 iters:")
+    disp(steps * 4)
 end

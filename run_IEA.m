@@ -3,13 +3,17 @@ t = t_I;
 y = y_I;
 y_array = [y]; 
 t_array = [t];
+total_iters = 0;
 while t < T
    if t + dt > T
        dt = T - t;
    end
-   [t_, y_, dt] = Implicit_euler_adaptive_step(t, y, dt, mu, tolerance);
+   [t_, y_, dt, iters] = Implicit_euler_adaptive_step(t, y, dt, mu, tolerance);
+   total_iters = total_iters + iters;
    y_array = [y_array, y_]; 
    t_array = [t_array, t_];
    y = y_; t = t_;
 end
+disp("IEA iters:")
+disp(total_iters)
 end

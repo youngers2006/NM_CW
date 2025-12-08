@@ -1,5 +1,7 @@
-function [y_, t_, dt_] = RKF45_step(t, y, dt, mu, tolerance)
+function [y_, t_, dt_, iters] = RKF45_step(t, y, dt, mu, tolerance)
+iters = 0;
 while true
+    iters = iters + 1;
     k1 = dt * f(t, y, mu);
     k2 = dt * f(t + dt/4, y + k1/4, mu);
     k3 = dt * f(t + (3/8)*dt, y + (3/32)*k1 + (9/32)*k2, mu);

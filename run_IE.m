@@ -3,14 +3,18 @@ t = t_I;
 y = y_I;
 y_array = y; 
 t_array = t;
+total_iters = 0;
 while t < T
    if t + dt > T
        dt = T - t;
    end
-   y_ = Implicit_step(t, y, dt, mu);
+   [y_, iters] = Implicit_step(t, y, dt, mu);
+   total_iters = total_iters + iters;
    t_ = t + dt;
    y_array = [y_array, y_]; 
    t_array = [t_array, t_];
    y = y_; t = t_;
 end
+disp("IE iters:")
+disp(total_iters)
 end
